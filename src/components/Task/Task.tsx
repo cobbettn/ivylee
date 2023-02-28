@@ -1,24 +1,22 @@
 import { useContext, useState } from "react"
 import { TasksContext } from "../../data/TasksContext/TasksContextProvider"
-import { Box, Card, CheckIcon, Checkbox, HStack, IconButton, Input, Menu, Pressable, Text, TextArea, ThreeDotsIcon, VStack } from "native-base";
+import { Box, CheckIcon, Checkbox, HStack, IconButton, Input, Menu, Pressable, Text, TextArea, ThreeDotsIcon, VStack } from "native-base";
+import { Keyboard, Platform } from "react-native";
 
 export const Task = ({task, index}) => {
-  const [editMode, setEditMode] = useState(false)
+  const [titleMode, setTitleMode] = useState(false)
   const [title, setTitle] = useState(task.title)
   const [notesMode, setNotesMode] = useState(false)
   const [notes, setNotes] = useState(task.notes)
   const { dispatch } = useContext(TasksContext);
+  const toggleEditMode = () => setTitleMode(!titleMode)
+  const toggleNotesMode = () => setNotesMode(!notesMode)
   const onCompleteTask = (checked) => {
     task.completedDate = !checked ? undefined : new Date()
     dispatch({type: 'update', task: task, index: index})
   }
-  const toggleEditMode = () => setEditMode(!editMode)
-  const toggleNotesMode = () => setNotesMode(!notesMode)
-  const onEditTitle = (event) => {
-    setTitle(event.target.value)
-  }
   const saveTask = () => {
-    if (editMode) {
+    if (titleMode) {
       dispatch({type: 'update', index, task: {...task, title}})
       toggleEditMode()
     }
@@ -31,40 +29,48 @@ export const Task = ({task, index}) => {
     dispatch({type: 'delete', index})
   }
   return (
-    <Card width={"33vw"} backgroundColor={task.completedDate === undefined ? 'white' : 'gray.300'}>
+    <Box shadow={2} p={4} width={Platform.OS === 'web' ? '35vw' : null}  borderRadius="md" backgroundColor={task.completedDate === undefined ? 'white' : 'gray.300'}>
       <HStack alignItems="center">
-        <VStack>
-          <Checkbox mr={2} isChecked={task.completedDate !== undefined} 
+        <VStack width={'80%'}>
+          <Checkbox 
+            mr={2} 
+            isChecked={task.completedDate !== undefined} 
             onChange={onCompleteTask} 
             value="completed" 
             accessibilityLabel="completed">
             {
-              editMode ? 
-                <Input backgroundColor="white" onChange={onEditTitle} value={title}></Input> :
+              titleMode ? 
+                <Input 
+                  onSubmitEditing={Platform.OS === 'ios' ? Keyboard.dismiss: null} 
+                  backgroundColor="white" 
+                  onChangeText={text => setTitle(text)} 
+                  value={title}></Input> :
                 <Text>{task.title}</Text> 
             }
           </Checkbox>
           { notesMode &&
-          <Box mt={2}>
-            {
-              notes && <Text>Notes:</Text>
-            }
-            <TextArea value={notes}
-              backgroundColor="white"
-              placeholder="Add notes" 
-              autoCompleteType={''} // https://github.com/GeekyAnts/NativeBase/issues/5438
-              onChange={e => setNotes(e.currentTarget.value)} // for web
-              onChangeText={text => setNotes(text)} // for android and ios
-              w="75%" 
-              maxW="300" />
-          </Box>
+            <Box mt={2}>
+              {
+                notes && <Text>Notes:</Text>
+              }
+              <TextArea 
+                w="100%"
+                value={notes}
+                onSubmitEditing={Platform.OS === 'ios' ? Keyboard.dismiss: null}
+                backgroundColor="white"
+                placeholder="Add notes" 
+                onChangeText={text => setNotes(text)}
+                autoCompleteType={''} // https://github.com/GeekyAnts/NativeBase/issues/5438
+                /> 
+            </Box>
           }
         </VStack>
         <Box ml="auto">
           {
-            editMode || notesMode ?
-              <IconButton onPress={saveTask} icon={<CheckIcon />} /> :
-              <Menu w="190" trigger={triggerProps => (
+            titleMode || notesMode ? 
+              <IconButton variant="outline" onPress={saveTask} icon={<CheckIcon />} /> 
+              :
+              <Menu w="175" trigger={triggerProps => (
                 <Pressable accessibilityLabel="More options menu" {...triggerProps}>
                   <ThreeDotsIcon />
                 </Pressable>
@@ -76,6 +82,6 @@ export const Task = ({task, index}) => {
           }
         </Box>
       </HStack>
-    </Card>
+    </Box>
   )
 }
