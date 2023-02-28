@@ -2,16 +2,16 @@ import { createContext, useReducer } from "react";
 import { tasksReducer } from "../tasksReducer";
 
 const initialValue = { 
-  tasks: []
+  user: {}
 }
 
-export const TasksContext = createContext(null);
+export const UserContext = createContext(null);
 
-export const TasksContextProvider = ({ children }) => {
+export const UserContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(tasksReducer, initialValue)
   return (
-    <TasksContext.Provider value={{ state, dispatch }}>
+    <UserContext.Provider value={{ state, dispatch }}>
       {children}
-    </TasksContext.Provider>
+    </UserContext.Provider>
   );
 };

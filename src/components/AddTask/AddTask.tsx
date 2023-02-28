@@ -1,6 +1,6 @@
 import { useContext, useState } from "react"
-import { TasksContext } from "../../data/TasksContext/tasksContextProvider"
-import { AddIcon, Box, HStack, IconButton, Input } from "native-base"
+import { TasksContext } from "../../data/TasksContext/TasksContextProvider"
+import { AddIcon, HStack, IconButton, Input } from "native-base"
 
 const AddTask = () => {
   const [title, setTitle] = useState('')
@@ -9,15 +9,20 @@ const AddTask = () => {
     setTitle(event.target.value)
   }
   const onButtonClick = () => {
-    dispatch({type: 'add', task: {
-      title,
-      createdDate: new Date()
-    }})
+    dispatch(
+      {
+        type: 'add',
+        task: {
+          title,
+          createdDate: new Date()
+        }
+      }
+    )
     setTitle('')
   }
   return (
     <HStack m={5}>      
-      <Input value={title} onChange={onInputChange} placeholder="Add a task"></Input>
+      <Input isDisabled={state.tasks.length === 6} value={title} onChange={onInputChange} placeholder="Add a task"></Input>
       <IconButton disabled={title === '' || state.tasks.length === 6} 
         onPress={onButtonClick} 
         icon={<AddIcon  />} 

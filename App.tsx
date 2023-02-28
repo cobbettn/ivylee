@@ -1,5 +1,5 @@
 import { NativeBaseProvider } from "native-base";
-import { TasksContextProvider } from "./src/data/TasksContext/tasksContextProvider";
+import { TasksContextProvider } from "./src/data/TasksContext/TasksContextProvider";
 import Tasks from "./src/views/Tasks/Tasks";
 
 export default function App() {
