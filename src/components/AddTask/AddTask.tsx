@@ -7,6 +7,7 @@ import { postData } from "../../data/http/post/postData"
 
 const AddTask = () => {
   const today = new Date()
+  const MAX_TASKS = 6;
   const [title, setTitle] = useState('')
   const {state, dispatch} = useContext(TasksContext)
   const dateContext = useContext(DateContext)
@@ -22,23 +23,26 @@ const AddTask = () => {
       .then(result => dispatch({type: 'add', task: {...result}}))
     setTitle('')
   }
-  const isEnabled = () => {
-    return state.tasks.length < 6 && dateContext.state.date?.getDay() >= today.getDay()
+  const isDisabled = () => {
+    console.log(today, dateContext.state.date)
+    const dsToday = today.toDateString()
+    const dsCurrentTasks = dateContext.state.date.toDateString()
+    return state.tasks.length === MAX_TASKS || new Date(dsToday) > new Date(dsCurrentTasks)
   }
   return (
     <HStack justifyContent="center" m={5}>      
       <Input
         backgroundColor={"white"}           
         onSubmitEditing={Platform.OS === 'ios' ? Keyboard.dismiss: null}
-        isDisabled={!isEnabled()} 
+        isDisabled={isDisabled()} 
         value={title} 
         onChangeText={onInputChange} 
         placeholder="Add a new task" />
       <IconButton 
-        disabled={title === '' || !isEnabled()} 
+        disabled={isDisabled()} 
         onPress={addTask} 
         icon={<AddIcon  />} 
-        variant={isEnabled() ?  "solid" : "outline"} 
+        variant={"solid"} 
         ml={1} />
     </HStack>
   )
