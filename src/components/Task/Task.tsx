@@ -1,85 +1,105 @@
-import { useContext, useState } from "react"
-import { TasksContext } from "../../data/TasksContext/TasksContextProvider"
-import { Box, CheckIcon, Checkbox, HStack, IconButton, Input, Menu, Pressable, Text, TextArea, ThreeDotsIcon, VStack } from "native-base";
+import { useContext, useState, useEffect } from "react"
+import { TasksContext } from "../../data/Contexts/TasksContext/TasksContextProvider"
+import { Box, CheckIcon, Checkbox, ChevronDownIcon, ChevronRightIcon, HStack, IconButton, Input, Menu, Pressable, Text, TextArea, ThreeDotsIcon, Tooltip, VStack } from "native-base";
 import { Keyboard, Platform } from "react-native";
+import { deleteData } from "../../data/http/delete/deleteData";
+import { putData } from "../../data/http/put/putData";
 
 export const Task = ({task, index}) => {
-  const [titleMode, setTitleMode] = useState(false)
   const [title, setTitle] = useState(task.title)
-  const [notesMode, setNotesMode] = useState(false)
+  const [titleMode, setTitleMode] = useState(false)
   const [notes, setNotes] = useState(task.notes)
-  const { dispatch } = useContext(TasksContext);
+  const [notesMode, setNotesMode] = useState(false)
+  const { dispatch } = useContext(TasksContext)
+
   const toggleEditMode = () => setTitleMode(!titleMode)
   const toggleNotesMode = () => setNotesMode(!notesMode)
-  const onCompleteTask = (checked) => {
-    task.completedDate = !checked ? undefined : new Date()
-    dispatch({type: 'update', task: task, index: index})
+  const updateTask = () => {
+    if (titleMode) toggleEditMode()
+    if (notesMode) toggleNotesMode()
+    putData(task.id, {...task, notes, title})
+    .then((result) => {
+      dispatch({type: 'update', index, task: result})
+    })
   }
-  const saveTask = () => {
-    if (titleMode) {
-      dispatch({type: 'update', index, task: {...task, title}})
-      toggleEditMode()
-    }
-    if (notesMode) {
-      dispatch({type: 'update', index, task: {...task, notes}})
-      toggleNotesMode()
-    }
+  const completeTask = (checked) => {
+    task.completedDate = !checked ? undefined : new Date().toDateString()
+    updateTask()
   }
   const deleteTask = () => {
-    dispatch({type: 'delete', index})
+    deleteData(task.id).then(() => {
+      dispatch({type: 'delete', task})
+    })
   }
   return (
-    <Box shadow={2} p={4} width={Platform.OS === 'web' ? '35vw' : null}  borderRadius="md" backgroundColor={task.completedDate === undefined ? 'white' : 'gray.300'}>
+    <Box
+      p={4}
+      shadow={2}
+      width={Platform.OS === 'web' ? '35vw' : 80}
+      borderRadius="md"
+      backgroundColor={task.completedDate === undefined ? 'white' : 'gray.300'}>
       <HStack alignItems="center">
-        <VStack width={'80%'}>
-          <Checkbox 
-            mr={2} 
-            isChecked={task.completedDate !== undefined} 
-            onChange={onCompleteTask} 
-            value="completed" 
-            accessibilityLabel="completed">
-            {
-              titleMode ? 
-                <Input 
-                  onSubmitEditing={Platform.OS === 'ios' ? Keyboard.dismiss: null} 
-                  backgroundColor="white" 
-                  onChangeText={text => setTitle(text)} 
-                  value={title}></Input> :
-                <Text>{task.title}</Text> 
-            }
-          </Checkbox>
-          { notesMode &&
-            <Box mt={2}>
+        <VStack w="80%">
+          <HStack h={5} alignItems="center">
+            <Checkbox
+              mr={2}
+              isChecked={task.completedDate !== undefined}
+              onChange={completeTask}
+              value="completed"
+              accessibilityLabel="completed">
               {
-                notes && <Text>Notes:</Text>
+                titleMode ?
+                <Input
+                  value={title}
+                  onChangeText={text => setTitle(text)}
+                  onSubmitEditing={Platform.OS === 'ios' ? Keyboard.dismiss : null}
+                  backgroundColor="white" /> :
+
+                <Text>{task.title}</Text>
               }
-              <TextArea 
-                w="100%"
+            </Checkbox>
+            {
+              task.notes  && 
+              <Tooltip label={notesMode ? 'close' : 'see notes'}>
+                <IconButton
+                  onPress={toggleNotesMode}
+                  size="xs"
+                  mr={2}
+                  icon={notesMode ? <ChevronRightIcon /> : <ChevronDownIcon />} />
+              </Tooltip>
+            }
+          </HStack>
+          {
+            notesMode &&
+            <Box mt={2} w={"100%"}>
+              <TextArea
                 value={notes}
-                onSubmitEditing={Platform.OS === 'ios' ? Keyboard.dismiss: null}
-                backgroundColor="white"
-                placeholder="Add notes" 
                 onChangeText={text => setNotes(text)}
+                onSubmitEditing={Platform.OS === 'ios' ? Keyboard.dismiss : null}
+                backgroundColor="white"
+                placeholder="Add notes"
                 autoCompleteType={''} // https://github.com/GeekyAnts/NativeBase/issues/5438
-                /> 
+              />
             </Box>
           }
         </VStack>
         <Box ml="auto">
-          {
-            titleMode || notesMode ? 
-              <IconButton variant="outline" onPress={saveTask} icon={<CheckIcon />} /> 
-              :
-              <Menu w="175" trigger={triggerProps => (
-                <Pressable accessibilityLabel="More options menu" {...triggerProps}>
-                  <ThreeDotsIcon />
-                </Pressable>
-              )}>
-                <Menu.Item onPress={toggleEditMode}>Edit</Menu.Item>
-                <Menu.Item onPress={toggleNotesMode}>Notes</Menu.Item>     
-                <Menu.Item onPress={deleteTask}>Delete</Menu.Item>       
-              </Menu>
-          }
+        {
+          titleMode || notesMode ?
+          <Tooltip label="Save">
+            <IconButton variant="outline" onPress={updateTask} icon={<CheckIcon />} />
+          </Tooltip> :
+          
+          <Menu w="175" trigger={triggerProps => (
+            <Pressable accessibilityLabel="More options menu" {...triggerProps}>
+              <ThreeDotsIcon />
+            </Pressable>
+          )}>
+            <Menu.Item onPress={toggleEditMode}>Edit</Menu.Item>
+            <Menu.Item onPress={toggleNotesMode}>Add notes</Menu.Item>
+            <Menu.Item onPress={deleteTask}>Delete</Menu.Item>
+          </Menu>
+        }
         </Box>
       </HStack>
     </Box>
