@@ -2,6 +2,7 @@ import { Box, ChevronLeftIcon, ChevronRightIcon, HStack, IconButton, Text } from
 import { useContext } from "react"
 import { DateContext } from "../../data/Contexts/DateContext/DateContextProvider"
 import { DateAction } from "../../data/Interfaces/IDateAction"
+import { Platform } from "react-native"
 
 const DateControl = () => {
   const {state, dispatch} = useContext(DateContext)
@@ -13,7 +14,7 @@ const DateControl = () => {
     dispatch({type: DateAction.next, date})
   }
   return(
-    <HStack width="35vw" p={2} mb={4}>
+    <HStack width={Platform.OS === "web" ? "35vw" : null} p={2} mb={4}>
       <IconButton mr="auto" variant={"outline"} onPress={prevDay} icon={<ChevronLeftIcon />} ></IconButton>
       <Box justifyContent="center" p={2}>
         <Text fontSize="lg" textAlign="center">Tasks for {date.toDateString()}:</Text>

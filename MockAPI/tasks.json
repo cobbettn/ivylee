@@ -3,7 +3,9 @@
     {
       "title": "test app",
       "date": "Fri Mar 03 2023",
-      "id": 1
+      "id": 1,
+      "notes": "so far so good\ni guess",
+      "completedDate": "Fri Mar 03 2023"
     },
     {
       "title": "go climbing",
@@ -15,27 +17,20 @@
       "date": "Fri Mar 03 2023",
       "id": 3,
       "completedDate": "Fri Mar 03 2023",
-      "notes": "all done?"
+      "notes": "all done"
     },
     {
-      "title": "test",
-      "date": "Fri Mar 03 2023",
-      "id": 5
-    },
-    {
-      "title": "foo",
-      "date": "Fri Mar 03 2023",
-      "id": 6
-    },
-    {
-      "title": "asdf",
-      "date": "Sun Mar 05 2023",
-      "id": 7
-    },
-    {
-      "title": "asdf",
+      "title": "old",
       "date": "Tue Feb 28 2023",
-      "id": 8
+      "id": 8,
+      "completedDate": "Fri Mar 03 2023",
+      "notes": ""
+    },
+    {
+      "title": "test mobile",
+      "date": "Sat Mar 04 2023",
+      "id": 9,
+      "notes": "the mock api won't work for mobile, need to find an alternative "
     }
   ]
 }

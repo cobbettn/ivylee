@@ -13,13 +13,13 @@ const Tasks = () => {
   const { state, dispatch } = tasksContext
   const { date } = dateContext.state
   useEffect(() =>{
-    fetch(`http://localhost:3000/tasks?date=${date.toDateString()}`)
+    fetch(`http://localhost:3001/tasks?date=${date.toDateString()}`)
       .then(res => res.status === 200 ? res.json() : [])
       .then(result =>  dispatch({type: 'set', tasks: result}))
   }, [date])
   return (
     <View>
-      <Box backgroundColor="gray.100" h="100vh">
+      <Box backgroundColor="gray.100" h={Platform.OS === "web" ? "100vh" : "100%"}>
         <Center mt={Platform.OS === 'ios' ? 20 : null}>
           <AddTask />
           <DateControl />

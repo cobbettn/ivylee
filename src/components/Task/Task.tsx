@@ -62,6 +62,7 @@ export const Task = ({task, index}) => {
               task.notes  && 
               <Tooltip label={notesMode ? 'close' : 'see notes'}>
                 <IconButton
+                  isDisabled={titleMode}
                   onPress={toggleNotesMode}
                   size="xs"
                   mr={2}
@@ -78,8 +79,8 @@ export const Task = ({task, index}) => {
                 onSubmitEditing={Platform.OS === 'ios' ? Keyboard.dismiss : null}
                 backgroundColor="white"
                 placeholder="Add notes"
-                autoCompleteType={''} // https://github.com/GeekyAnts/NativeBase/issues/5438
-              />
+                autoCompleteType={''} // https://github.com/GeekyAnts/NativeBase/issues/5438 
+                />
             </Box>
           }
         </VStack>

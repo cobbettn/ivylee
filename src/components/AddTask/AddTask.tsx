@@ -32,17 +32,20 @@ const AddTask = () => {
   return (
     <HStack justifyContent="center" m={5}>      
       <Input
+        size={"md"}
+        width="80%"
         backgroundColor={"white"}           
         onSubmitEditing={Platform.OS === 'ios' ? Keyboard.dismiss: null}
         isDisabled={isDisabled()} 
         value={title} 
         onChangeText={onInputChange} 
         placeholder="Add a new task" />
-      <IconButton 
-        disabled={isDisabled()} 
+      <IconButton
+        size={"md"}
+        disabled={isDisabled() || title.trim() === ''} 
         onPress={addTask} 
-        icon={<AddIcon  />} 
-        variant={"solid"} 
+        icon={<AddIcon />} 
+        variant={ isDisabled() ? "outline" : "solid"} 
         ml={1} />
     </HStack>
   )

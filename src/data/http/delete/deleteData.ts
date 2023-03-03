@@ -1,6 +1,6 @@
 export async function deleteData( id) {
   // Default options are marked with *
-  const response = await fetch(`http://localhost:3000/tasks/${id}`, {
+  const response = await fetch(`http://localhost:3001/tasks/${id}`, {
     method: "DELETE", // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
     cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
