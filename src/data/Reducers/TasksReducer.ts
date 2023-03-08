@@ -11,7 +11,7 @@ export const tasksReducer = (state, action) => {
       state.tasks[index] = task
       return {...state}
     case 'delete':
-      state.tasks = state.tasks.filter((t) => t.id != task.id)
+      state.tasks = state.tasks.filter((t, i) => i != index)
       return {...state}
     default:
       return {...state}

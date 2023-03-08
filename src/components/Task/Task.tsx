@@ -1,35 +1,42 @@
-import { useContext, useState, useEffect } from "react"
+import { useContext, useState } from "react"
 import { TasksContext } from "../../data/Contexts/TasksContext/TasksContextProvider"
 import { Box, CheckIcon, Checkbox, ChevronDownIcon, ChevronRightIcon, HStack, IconButton, Input, Menu, Pressable, Text, TextArea, ThreeDotsIcon, Tooltip, VStack } from "native-base";
 import { Keyboard, Platform } from "react-native";
-import { deleteData } from "../../data/http/delete/deleteData";
-import { putData } from "../../data/http/put/putData";
+import { setTasks } from "../../data/AsyncStorage/tasks";
+import { DateContext } from "../../data/Contexts/DateContext/DateContextProvider";
 
 export const Task = ({task, index}) => {
   const [title, setTitle] = useState(task.title)
   const [titleMode, setTitleMode] = useState(false)
   const [notes, setNotes] = useState(task.notes)
   const [notesMode, setNotesMode] = useState(false)
-  const { dispatch } = useContext(TasksContext)
+  const { dispatch, state } = useContext(TasksContext)
+  const dateContext = useContext(DateContext)
 
   const toggleEditMode = () => setTitleMode(!titleMode)
   const toggleNotesMode = () => setNotesMode(!notesMode)
   const updateTask = () => {
     if (titleMode) toggleEditMode()
     if (notesMode) toggleNotesMode()
-    putData(task.id, {...task, notes, title})
-    .then((result) => {
-      dispatch({type: 'update', index, task: result})
-    })
+
+    state.tasks[index] = {...task, notes, title}
+
+    updateAsyncStorage()
   }
   const completeTask = (checked) => {
     task.completedDate = !checked ? undefined : new Date().toDateString()
     updateTask()
   }
   const deleteTask = () => {
-    deleteData(task.id).then(() => {
-      dispatch({type: 'delete', task})
-    })
+    state.tasks = state.tasks.filter((task, i) => i !== index)
+
+    updateAsyncStorage()
+  }
+  const updateTaskState = () => dispatch({type: 'set', tasks: [...state.tasks]})
+  const updateAsyncStorage = () => {
+    setTasks(dateContext.state.date, [...state.tasks])
+      .then(() => updateTaskState())
+      .catch(e => console.log(e))
   }
   return (
     <Box

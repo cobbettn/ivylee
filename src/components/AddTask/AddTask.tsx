@@ -3,7 +3,7 @@ import { TasksContext } from "../../data/Contexts/TasksContext/TasksContextProvi
 import { AddIcon, HStack, IconButton, Input } from "native-base"
 import { Keyboard, Platform } from "react-native"
 import { DateContext } from "../../data/Contexts/DateContext/DateContextProvider"
-import { postData } from "../../data/http/post/postData"
+import { setTasks } from "../../data/AsyncStorage/tasks"
 
 const AddTask = () => {
   const today = new Date()
@@ -15,20 +15,26 @@ const AddTask = () => {
     setTitle(text)
   }
   const addTask = () => {
-    postData( 
-      {
-        title, 
-        date: dateContext.state.date.toDateString()
+    const task = {
+      title,
+      createdDate: today.toDateString()
+    }
+    const tasks = [...state.tasks, task]
+    setTasks(dateContext.state.date, tasks)
+      .then(() => {
+        dispatch({type: 'set', tasks})
       })
-      .then(result => dispatch({type: 'add', task: {...result}}))
-    setTitle('')
+      .catch(e => console.log(e)) 
+      .finally(() => {
+        setTitle('')
+      })
   }
   const isDisabled = () => {
-    console.log(today, dateContext.state.date)
     const dsToday = today.toDateString()
     const dsCurrentTasks = dateContext.state.date.toDateString()
     return state.tasks.length === MAX_TASKS || new Date(dsToday) > new Date(dsCurrentTasks)
   }
+
   return (
     <HStack justifyContent="center" m={5}>      
       <Input

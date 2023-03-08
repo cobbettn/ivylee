@@ -10,7 +10,8 @@
     {
       "title": "go climbing",
       "date": "Fri Mar 03 2023",
-      "id": 2
+      "id": 2,
+      "completedDate": "Fri Mar 03 2023"
     },
     {
       "title": "walk poppy",
@@ -24,13 +25,26 @@
       "date": "Tue Feb 28 2023",
       "id": 8,
       "completedDate": "Fri Mar 03 2023",
-      "notes": ""
+      "notes": "dumb shit"
     },
     {
       "title": "test mobile",
       "date": "Sat Mar 04 2023",
       "id": 9,
-      "notes": "the mock api won't work for mobile, need to find an alternative "
+      "notes": "the mock api won't work for mobile, need to find an alternative ",
+      "completedDate": "Fri Mar 03 2023"
+    },
+    {
+      "title": "deck posts",
+      "date": "Sat Mar 04 2023",
+      "id": 10,
+      "notes": "install sister joist first"
+    },
+    {
+      "title": "respond to tax company",
+      "date": "Sat Mar 04 2023",
+      "id": 11,
+      "notes": "allegneny county tax assessment\n\nsend email"
     }
   ]
 }
