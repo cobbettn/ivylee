@@ -6,18 +6,29 @@ import { Center, Box } from "native-base"
 import { Platform, View } from "react-native"
 import DateControl from "../../components/DateControl/DateControl"
 import { DateContext } from "../../data/Contexts/DateContext/DateContextProvider"
-import { getTasks } from "../../data/AsyncStorage/tasks"
+import { getTasks, moveIncompleteTasksToToday } from "../../data/AsyncStorage/tasks"
 
 const Tasks = () => {
   const tasksContext = useContext(TasksContext)
   const dateContext = useContext(DateContext)
   const { state, dispatch } = tasksContext
   const { date } = dateContext.state
+
+  // when component is mounted, move any incomplete tasks from yesterday to today
+  useEffect(() => {
+    moveIncompleteTasksToToday()
+      .then(tasks => {
+        if (tasks?.length > 0) {
+          dispatch({type: 'set', tasks})
+        }
+      })
+  }, [])
+  
   useEffect(() => {
     getTasks(date)
-    .then(tasks => {
-      dispatch({type: 'set', tasks: tasks ?? []})
-    })
+      .then(tasks => {
+        dispatch({type: 'set', tasks: tasks?.length > 0 ? tasks : []})
+      })
   }, [date])
 
   return (

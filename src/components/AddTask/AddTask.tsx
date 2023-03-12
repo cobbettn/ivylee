@@ -15,12 +15,16 @@ const AddTask = () => {
     setTitle(text)
   }
   const addTask = () => {
+
+    const { date } = dateContext.state
+
     const task = {
       title,
-      createdDate: today.toDateString()
+      createdDate: date.toDateString()
     }
+
     const tasks = [...state.tasks, task]
-    setTasks(dateContext.state.date, tasks)
+    setTasks(date, tasks)
       .then(() => {
         dispatch({type: 'set', tasks})
       })
