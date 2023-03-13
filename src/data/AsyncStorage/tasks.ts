@@ -3,8 +3,14 @@ import { Task } from "../Types/Task"
 
 export const setTasks = async (key: Date, value: Task[]): Promise<void> => {
   try {
-    const jsonValue = JSON.stringify(value) // AsyncStorage can only store strings as values
-    await AsyncStorage.setItem(`@${key.toDateString()}`, jsonValue)
+    if (value?.length > 0) {
+      const jsonValue = JSON.stringify(value) // AsyncStorage can only store strings as values
+      await AsyncStorage.setItem(`@${key.toDateString()}`, jsonValue)
+    }
+    else {
+      // if no tasks, delete key from db
+      deleteTasks(key)
+    }
   }
   catch (e) {
     // error handling
@@ -17,6 +23,7 @@ export const getTasks = async (key: Date): Promise<Task[]> => {
     return jsonValue != null ? JSON.parse(jsonValue) : null
   } 
   catch(e) {
+    console.log(e)
     // error handling
   }
 }
@@ -40,13 +47,13 @@ export const moveIncompleteTasksToToday = async () => {
   const yesterdaysTasks = await getTasks(yesterday)
 
   if (yesterdaysTasks?.length > 0) {
-    const incompleteTasks = yesterdaysTasks.filter(tasks => tasks.completedDate !== null)
+    const incompleteTasks = yesterdaysTasks.filter(task => !("completedDate" in task))
     if (incompleteTasks.length > 0) {
       const todaysTasks = await getTasks(today)
       tasks = todaysTasks?.length > 0 ? [...todaysTasks, ...incompleteTasks] : incompleteTasks
-      const updatedTasksYesterday = yesterdaysTasks.filter(task => task.completedDate === null)
-      if (updatedTasksYesterday.length > 0) {
-        await setTasks(yesterday, updatedTasksYesterday)
+      const completedTasks = yesterdaysTasks.filter(task => "completedDate" in task)
+      if (completedTasks.length > 0) {
+        await setTasks(yesterday, completedTasks)
       }
       else {
         await deleteTasks(yesterday)
